@@ -1,0 +1,160 @@
+# library_ai_agent.py
+from langchain_ibm import ChatWatsonx
+from ibm_watsonx_ai import APIClient
+from langchain_core.messages import AIMessage, HumanMessage
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.prebuilt import create_react_agent
+from ibm_watsonx_ai.foundation_models.utils import Tool
+import json
+import os
+import getpass
+import requests
+
+# 1. Authentication
+def get_credentials():
+    return {
+        "url": "https://us-south.ml.cloud.ibm.com",
+        "apikey": getpass.getpass("IBM Cloud API Key:")
+    }
+
+credentials = get_credentials()
+
+# 2. Model Configuration
+model_id = "ibm/granite-3-3-8b-instruct"
+parameters = {
+    "temperature": 0.3,
+    "max_tokens": 1000,
+    "top_p": 0.9
+}
+
+# 3. Library Tools
+class LibraryTools:
+    @staticmethod
+    def book_search(query: str, course_code: str = None):
+        """Mock library catalog search"""
+        # In production, connect to your ILS API (e.g., Alma, Koha)
+        results = {
+            "books": [
+                {
+                    "id": "bk001",
+                    "title": "Introduction to Quantum Mechanics",
+                    "author": "David J. Griffiths",
+                    "course_relevance": ["PHY301", "PHY405"],
+                    "available": True,
+                    "location": "Science Wing - Shelf 4A"
+                },
+                {
+                    "id": "bk002",
+                    "title": "Pattern Recognition and Machine Learning",
+                    "author": "Christopher Bishop",
+                    "course_relevance": ["CS501"],
+                    "available": False,
+                    "waitlist": 3
+                }
+            ]
+        }
+        return json.dumps(results)
+
+    @staticmethod
+    def check_availability(book_id: str):
+        """Mock availability check"""
+        return json.dumps({
+            "available": False,
+            "waitlist_position": 2,
+            "estimated_availability": "2024-07-30"
+        })
+
+    @staticmethod
+    def place_hold(book_id: str, user_id: str):
+        """Mock reservation system"""
+        return json.dumps({
+            "confirmation": "HLD202406001",
+            "status": "waitlisted",
+            "position": 2
+        })
+
+def create_tools():
+    tools = [
+        Tool(
+            name="book_search",
+            description="Search library catalog by title/author/course. Returns JSON with availability.",
+            func=LibraryTools.book_search,
+            args_schema={
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string"},
+                    "course_code": {"type": "string"}
+                },
+                "required": ["query"]
+            }
+        ),
+        Tool(
+            name="check_availability",
+            description="Check real-time book availability and waitlist status",
+            func=LibraryTools.check_availability,
+            args_schema={
+                "type": "object",
+                "properties": {
+                    "book_id": {"type": "string"}
+                },
+                "required": ["book_id"]
+            }
+        )
+    ]
+    return tools
+
+# 4. Agent Configuration
+def create_agent():
+    client = APIClient(credentials=credentials)
+    
+    chat_model = ChatWatsonx(
+        model_id=model_id,
+        url=credentials["url"],
+        params=parameters,
+        watsonx_client=client
+    )
+
+    instructions = """
+You are **LibraAI**, a university library assistant. Follow these rules:
+
+1. **Query Clarification**:
+   - Always ask: "Is this for a specific course? (e.g., PHY301)"
+   - "Do you need the latest edition or seminal works?"
+
+2. **Response Format**:
+   - "For [COURSE], I found:"
+   - "1. [TITLE] by [AUTHOR] (Available/Waitlist: X)"
+   - "Location: [SHELF] | Call#: [NUMBER]"
+
+3. **Safety**:
+   - Never store full student IDs (mask last 4 digits)
+   - All reservations require authentication
+
+4. **Example Workflow**:
+   User: "Find books about machine learning"
+   → Clarify: "Is this for CS501 or personal research?"
+   → Search → Show results with availability
+   → Offer: "Shall I place a hold for you?"
+"""
+
+    return create_react_agent(
+        chat_model,
+        tools=create_tools(),
+        checkpointer=MemorySaver(),
+        state_modifier=instructions
+    )
+
+# 5. Execution
+if __name__ == "__main__":
+    agent = create_agent()
+    
+    while True:
+        query = input("\nStudent Query (or 'quit'): ")
+        if query.lower() == 'quit':
+            break
+            
+        response = agent.invoke({
+            "messages": [HumanMessage(content=query)]
+        })
+        
+        print(f"\nLibraAI: {response['messages'][-1].content}")
