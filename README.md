@@ -4,7 +4,6 @@
 ![IBM Watson](https://img.shields.io/badge/IBM-Watson%20AI-054ADA?style=flat-square&logo=ibm)
 ![IBM Granite](https://img.shields.io/badge/IBM-Granite%20LLM-red?style=flat-square&logo=ibm)
 ![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-orange?style=flat-square&logo=jupyter)
-![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
 
 > An intelligent AI agent built on **IBM Granite** and **IBM Cloud** that helps students find the right learning materials by understanding natural language queries, analysing study profiles, and providing personalised book recommendations with real-time availability checks.
 
@@ -157,12 +156,6 @@ pip install -r Python.txt
 **Praasuk Jain**
 - GitHub: [@PJ2001-IND](https://github.com/PJ2001-IND)
 - LinkedIn: [praasuk-jain](https://www.linkedin.com/in/praasuk-jain-425b6b1a3/)
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
 
 ---
 
