@@ -1,0 +1,20 @@
+# Library AI Agent — Python Dependencies
+
+# IBM watsonx.ai SDK
+ibm-watsonx-ai>=1.0.0
+
+# LangChain IBM integration
+langchain-ibm>=0.1.0
+
+# LangChain core (messages, tools)
+langchain-core>=0.2.0
+
+# LangGraph — ReAct agent framework
+langgraph>=0.1.0
+
+# HTTP requests (bearer token fetch)
+requests>=2.31.0
+
+# Notebook environment
+jupyter>=1.0.0
+ipykernel>=6.0.0
