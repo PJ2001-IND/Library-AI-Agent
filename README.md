@@ -8,7 +8,7 @@
 ![Google Search](https://img.shields.io/badge/Tool-Google%20Search-red?style=flat-square&logo=google)
 ![RAG](https://img.shields.io/badge/Tool-RAG%20Query-yellow?style=flat-square)
 
-> A **university library AI assistant** built as a LangGraph ReAct agent on **IBM watsonx.ai Agent Lab** — powered by **IBM Granite 3.3 8B Instruct**. The agent uses **Google Search** and **RAG (Retrieval-Augmented Generation)** tools to help students find study materials, course-specific books, and trending resources by topic and academic level. The project covers agent creation, local testing, AI Service deployment to an IBM watsonx.ai deployment space, and live preview via the watsonx.ai Agent Preview interface..
+> A **university library AI assistant** built as a LangGraph ReAct agent on **IBM watsonx.ai Agent Lab** — powered by **IBM Granite 3.3 8B Instruct**. The agent uses **Google Search** and **RAG (Retrieval-Augmented Generation)** tools to help students find study materials, course-specific books, and trending resources by topic and academic level. The project covers agent creation, local testing, AI Service deployment to an IBM watsonx.ai deployment space, and live preview via the watsonx.ai Agent Preview interface.
 
 ---
 
